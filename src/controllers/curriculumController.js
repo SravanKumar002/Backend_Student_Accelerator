@@ -12,42 +12,46 @@ const DEFAULT_DURATIONS = {
   PROJECT: 120, // Projects: 2 hours
 };
 
-// Correct topic order for each course
+// Correct topic order for each course (based on actual CCBP curriculum order)
 const TOPIC_ORDER = {
-  "Introduction to Databases": [
-    "Introduction to Database",
-    "Introduction To SQL",
-    "Querying with SQL",
-    "Querying with SQL - 2",
-    "Aggregations and Group By",
-    "Group By with Having",
-    "SQL Expressions and Functions",
-    "SQL Case Clause and Set Operations",
-    "Modelling Databases",
-    "Joins",
-    "Querying with Joins",
-    "Views and Subqueries",
-    "SQL Course Quiz"
-  ],
-  "Programming Foundations": [
-    "Introduction to Python",
-    "I/O Basics",
-    "Operators & Conditional Statements",
-    "Nested Conditions",
-    "Loops",
-    "Loop Control Statements",
-    "Comparing Strings & Naming Variables",
-    "Lists",
-    "Functions",
+  // === DSA COURSES ===
+  "Phase 1 : Data Structures and Algorithms": [
+    "Importance of Data Structures and Algorithms",
+    "C++ Basics",
+    "Patterns",
+    "Complexity Analysis",
+    "C++ STL",
+    "Math Basics",
     "Recursion",
-    "Tuples & Sets",
-    "Dictionaries",
-    "Introduction to Object Oriented Programming",
-    "Miscellaneous Topics",
-    "Revision",
-    "NxtMock - Your AI Interviewer",
-    "Programming Foundations Course Exam"
+    "Pseudo Code",
+    "Sorting",
+    "Arrays",
+    "Advanced Recursion",
+    "Binary Search",
+    "Dynamic Programming",
+    "Linked List",
+    "Binary Trees",
+    "Graphs"
   ],
+  "Phase 2 : Advanced DSA": [
+    "Graphs",
+    "Binary Tree",
+    "Binary Search Tree",
+    "Linked List",
+    "Arrays",
+    "Bit Manipulation",
+    "Stacks & Queues",
+    "Strings",
+    "Hashing",
+    "Sliding Window & Two Pointer",
+    "Greedy Algorithms",
+    "Heaps",
+    "Dynamic Programming",
+    "Trie",
+    "Course Exam"
+  ],
+  
+  // === FRONTEND COURSES ===
   "Build Your Own Static Website": [
     "Introduction to HTML",
     "HTML Hyperlinks",
@@ -63,49 +67,123 @@ const TOPIC_ORDER = {
     "Build Your Own Static Website Course Quiz"
   ],
   "Build Your Own Responsive Website": [
-    "Introduction to Responsive Design",
-    "Media Queries",
-    "Flexbox",
-    "CSS Grid",
-    "Bootstrap Basics",
-    "Bootstrap Components",
-    "Bootstrap Layouts",
-    "Responsive Layouts"
+    "Responsive Web Design & Bootstrap Grid System",
+    "CSS Selectors and Inheritance",
+    "CSS Specificity and Cascade & Developing Layouts",
+    "CSS Gradients and Transitions",
+    "CSS Transforms and Animations",
+    "Bootstrap Grid System and Navbar",
+    "Developing Layouts 2",
+    "Developing Layouts 3",
+    "Industry Readiness",
+    "Revision",
+    "Build Your Own Responsive Website Course Quiz"
   ],
   "Modern Responsive Web Design": [
-    "Introduction",
-    "Typography",
-    "Colors",
-    "Layout",
-    "Components",
-    "Utilities",
-    "Forms",
-    "Project"
+    "Sizing Elements and Box Sizing",
+    "Introduction to CSS Flexbox",
+    "CSS Flexbox & Media Queries",
+    "Flexbox Sizing",
+    "CSS Positioning | Part I and Part II",
+    "CSS Grid | Part I and Part II",
+    "CSS Grid | Part III and Part IV",
+    "Introduction to Tailwind CSS |  Part I and Part II",
+    "Building a Responsive Website with Tailwind CSS",
+    "Revision",
+    "Modern Responsive Web Design Course Quiz"
+  ],
+  
+  // === PROGRAMMING FOUNDATIONS ===
+  "Programming Foundations": [
+    "Introduction to Python",
+    "Sequence of Instructions",
+    "Type Conversions",
+    "Logical Operators & Conditonal Statements",
+    "Nested Conditional Statements & Loops",
+    "For Loop",
+    "Nested Loops & Problem Solving",
+    "Loop Control Statements & Problem Solving",
+    "Comparing Strings & Naming Variables",
+    "Lists",
+    "Lists - 2",
+    "List Methods and Tuples",
+    "Nested Lists and String Formatting",
+    "Sets and Set Operations",
+    "Dictionaries",
+    "Functions",
+    "Scopes and Python Libraries",
+    "Built-in Functions & Recursions",
+    "Problem Solving using Recursion",
+    "Understanding OOPs",
+    "Object Oriented Programming",
+    "Encapsulation and Inheritance",
+    "Abstraction and Polymorphism",
+    "Error Handling and DateTime",
+    "Intro to Matrices & Shorthand expressions",
+    "String Methods & Problem Solving and Debugging - 3",
+    "More Python Concepts",
+    "Problem Solving",
+    "Problem Solving and Debugging",
+    "Problem Solving and Built-in Functions",
+    "Understanding Coding Question Formats",
+    "Revision",
+    "Programming Foundations Course Quiz"
+  ],
+  
+  // === JAVASCRIPT & DYNAMIC WEB ===
+  "JS Essentials": [
+    "More JS Concepts",
+    "More JS Concepts II",
+    "JS Classes & Promises",
+    "More Modern JS Concepts",
+    "More Modern JS Concepts II",
+    "More Modern JS Concepts III",
+    "Revision"
   ],
   "Build Your Own Dynamic Web Application": [
+    "Introduction to Dynamic Web Applications",
     "Introduction to JS & Variables",
-    "Arrays and Objects",
-    "Todos Application",
-    "Todos Application 2",
-    "Todos Application 3",
-    "Todos Application 4",
+    "Arrays & Objects",
+    "Forms",
     "Fetch & Callbacks",
     "Fetch & Callbacks 2",
-    "Forms",
-    "Assignments",
-    "Mock Tests",
-    "Build Your Own Dynamic Web Application Course Exam"
+    "Fetch & Callbacks 3",
+    "More Web Concepts",
+    "Revision"
   ],
+  
+  // === DATABASE ===
+  "Introduction to Databases": [
+    "Introduction to Database",
+    "Introduction To SQL",
+    "Querying with SQL",
+    "Querying with SQL - 2",
+    "Aggregations and Group By",
+    "Group By with Having",
+    "SQL Expressions and Functions",
+    "SQL Case Clause and Set Operations",
+    "Modelling Databases",
+    "Joins",
+    "Querying with Joins",
+    "Views and Subqueries",
+    "SQL Course Quiz"
+  ],
+  
+  // === BACKEND ===
   "Node JS": [
     "MERN Stack and CCBP IDE",
     "Introduction to Node JS",
     "Introduction to Express JS",
-    "REST APIs",
+    "Introduction to Express JS - 2",
+    "REST APIs and Debugging",
     "Authentication",
-    "Assignments",
-    "Mock Tests",
-    "Node JS Course Exam"
+    "Course Quiz"
   ],
+  "MongoDB": [
+    "Introduction to MongoDB"
+  ],
+  
+  // === REACT ===
   "Introduction to React JS": [
     "Introduction to React JS and States",
     "Introduction to State Hook",
@@ -115,46 +193,47 @@ const TOPIC_ORDER = {
     "Authentication & Authorization",
     "Course Quiz"
   ],
+  
+  // === AI/ML COURSES ===
   "Generative AI": [
-    "Introduction to AI",
-    "Prompt Engineering",
-    "LLM Basics",
-    "API Integration",
-    "RAG Basics",
-    "Building Apps"
+    "Course Overview",
+    "Introduction to Generative AI and AI Workflows",
+    "Advanced Gen AI Capabilities",
+    "Productivity Power-Up with AI Tools & Prompt Engineering Fundamentals",
+    "No-Code AI Automation",
+    "AI Workflows for Enhanced Productivity",
+    "Mastering Image Generation",
+    "Mastering Audio Generation & No-Code Application Building",
+    "Building AI Agents",
+    "Building an AI Shopping Assistant",
+    "Agents with Memory & Introduction to MCP"
   ],
-  "DSA Foundation": [
-    "Introduction to DSA",
-    "Time Complexity",
-    "Space Complexity",
-    "Arrays",
-    "Strings",
-    "Searching",
-    "Sorting",
-    "Recursion"
+  "Building LLM Applications": [
+    "Course Overview",
+    "Building LLM Applications Using Python",
+    "Building UI and Deploying LLM Applications",
+    "Understanding How LLMs Works & Enhancing Productivity with AI",
+    "Tools Use & Function Calling in LLMs",
+    "Introduction to LangChain and Retrieval-Augmented Generation (RAG)",
+    "Building AI Agents Using LangChain and Memory Agents",
+    "Building AI-Powered Conversational Interview Assistant and RAG Agent Using LangChain",
+    "Introduction to Context Engineering and MCP",
+    "Building Multi Agent Systems and LLM Evaluation",
+    "Agent Evaluation and End-to-End AI Systems"
   ],
-  "Phase 1 : Data Structures and Algorithms": [
-    "Introduction",
-    "Arrays",
-    "Strings",
-    "Linked Lists",
-    "Stacks",
-    "Queues",
-    "Trees",
-    "Binary Search Trees",
-    "Heaps",
-    "Hashing"
-  ],
-  "Phase 2 : Advanced DSA": [
-    "Graphs",
-    "Dynamic Programming",
-    "Greedy Algorithms",
-    "Backtracking",
-    "Divide and Conquer",
-    "Advanced Trees",
-    "Trie",
-    "Segment Trees"
-  ]
+  
+  // === DATA ANALYTICS ===
+  "Data Analytics Foundations": [],
+  "Data Analytics Practice": [],
+  "Data Analytics using PowerBI": [],
+  "Data Analytics using Tableau": [],
+  
+  // === ML ===
+  "Introduction to ML and Classification Algorithms": [],
+  "Supervised Learning: Regression": [],
+  
+  // === DSA FOUNDATION ===
+  "DSA Foundation": []
 };
 
 // Get topic order index for sorting
