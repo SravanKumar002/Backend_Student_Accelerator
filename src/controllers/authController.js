@@ -172,16 +172,21 @@ export const firebaseGoogleLogin = async (req, res) => {
         let user = await User.findOne({ email });
 
         if (user) {
-            // Update name if provided
+            // Update name if provided and googleId if not set
             if (name && !user.name) {
                 user.name = name;
-                await user.save();
             }
+            if (!user.googleId) {
+                user.googleId = `firebase_${email}`;
+            }
+            await user.save();
         } else {
             // Create user for first time Google login
+            // Use googleId to bypass password requirement in User model
             user = await User.create({
                 name: name || email.split('@')[0],
                 email,
+                googleId: `firebase_${email}`,
                 role: role || 'coach',
             });
         }
