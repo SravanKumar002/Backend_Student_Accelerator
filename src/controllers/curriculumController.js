@@ -171,6 +171,49 @@ function getTopicOrderIndex(courseName, topic) {
   return index >= 0 ? index : 999;
 }
 
+// Session type priority for ordering within a topic
+const SESSION_TYPE_ORDER = {
+  'LEARNING_SET': 1,
+  'QUIZ': 2,
+  'PRACTICE': 3,
+  'QUESTION_SET': 4,
+  'EXAM': 5,
+  'ASSESSMENT': 6,
+  'PROJECT': 7
+};
+
+// Get session order within a topic based on session name patterns
+function getSessionNameOrder(sessionName) {
+  const name = sessionName?.toLowerCase() || '';
+  
+  // Main topic video/content comes first
+  if (!name.includes('|') && !name.includes('reading material') && !name.includes('quiz') && 
+      !name.includes('practice') && !name.includes('coding') && !name.includes('mcq') &&
+      !name.includes('daily') && !name.includes('classroom')) {
+    return 0;
+  }
+  // Reading material comes after main content
+  if (name.includes('reading material')) return 1;
+  // Cheat sheet
+  if (name.includes('cheat sheet')) return 2;
+  // Classroom Quiz A, B, C
+  if (name.includes('classroom quiz a')) return 3;
+  if (name.includes('classroom quiz b')) return 4;
+  if (name.includes('classroom quiz c')) return 5;
+  // MCQ Practice
+  if (name.includes('mcq practice')) return 6;
+  // Coding Practice
+  if (name.includes('coding practice')) return 7;
+  // Daily Quiz
+  if (name.includes('daily quiz')) return 8;
+  // Other quizzes
+  if (name.includes('quiz')) return 9;
+  // Practice
+  if (name.includes('practice')) return 10;
+  
+  return 50; // Default for unknown patterns
+}
+
 // Apply default duration if not provided
 function applyDefaultDuration(session) {
   if (!session.durationMins || session.durationMins <= 0) {
@@ -227,7 +270,7 @@ export const getSessions = async (req, res) => {
       return applyDefaultDuration(sessionObj);
     });
     
-    // Sort sessions by topic order first, then by sequence number
+    // Sort sessions by topic order first, then by session name order within topic
     const sortedSessions = sessionsWithDurations.sort((a, b) => {
       const topicOrderA = getTopicOrderIndex(courseName, a.topic);
       const topicOrderB = getTopicOrderIndex(courseName, b.topic);
@@ -236,7 +279,15 @@ export const getSessions = async (req, res) => {
         return topicOrderA - topicOrderB;
       }
       
-      // Within same topic, sort by sequence number
+      // Within same topic, sort by session name pattern
+      const sessionOrderA = getSessionNameOrder(a.sessionName);
+      const sessionOrderB = getSessionNameOrder(b.sessionName);
+      
+      if (sessionOrderA !== sessionOrderB) {
+        return sessionOrderA - sessionOrderB;
+      }
+      
+      // If same pattern, use sequence number as tiebreaker
       return (a.sequenceNumber || 0) - (b.sequenceNumber || 0);
     });
 
