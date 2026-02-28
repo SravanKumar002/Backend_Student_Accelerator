@@ -156,3 +156,48 @@ export const googleLogin = async (req, res) => {
         res.status(401).json({ message: 'Invalid Google Identity token', error: error.message });
     }
 };
+
+// @desc    Authenticate with Firebase Google Sign-In
+// @route   POST /api/auth/firebase-google
+// @access  Public
+export const firebaseGoogleLogin = async (req, res) => {
+    try {
+        const { idToken, name, email, role } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        // Check if user already exists
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // Update name if provided
+            if (name && !user.name) {
+                user.name = name;
+                await user.save();
+            }
+        } else {
+            // Create user for first time Google login
+            user = await User.create({
+                name: name || email.split('@')[0],
+                email,
+                role: role || 'coach',
+            });
+        }
+
+        return res.json({
+            _id: user._id,
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            token: generateToken(user._id),
+        });
+
+    } catch (error) {
+        console.error("Firebase Google Auth Error:", error);
+        res.status(401).json({ message: 'Authentication failed', error: error.message });
+    }
+};
