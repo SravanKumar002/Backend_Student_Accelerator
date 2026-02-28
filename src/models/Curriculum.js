@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const curriculumSchema = new mongoose.Schema({
+const curriculumSchema = new mongoose.Schema(
+  {
     courseName: { type: String },
     courseId: { type: String, required: true },
     topic: { type: String },
@@ -14,10 +15,12 @@ const curriculumSchema = new mongoose.Schema({
     outcomes: { type: String },
     prerequisites: { type: String },
     techNonTech: { type: String },
-    sequenceNumber: { type: Number, index: true }  // Preserves CSV row order for proper curriculum sequence
-}, {
-    timestamps: true
-});
+    sequenceNumber: { type: Number, index: true }, // Preserves CSV row order for proper curriculum sequence
+  },
+  {
+    timestamps: true,
+  },
+);
 
-const Curriculum = mongoose.model('Curriculum', curriculumSchema);
+const Curriculum = mongoose.model("Curriculum", curriculumSchema);
 export default Curriculum;

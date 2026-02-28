@@ -1,19 +1,20 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import admin from 'firebase-admin';
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDuDIcxPh5vPij8afyUPXCDxRJtF-igB1g",
-    authDomain: "student-accerator.firebaseapp.com",
-    projectId: "student-accerator",
-    storageBucket: "student-accerator.firebasestorage.app",
-    messagingSenderId: "1091377115228",
-    appId: "1:1091377115228:web:d57b811a96ddf3bf2b7699",
-    measurementId: "G-H078JEWZF7"
-};
+// Initialize Firebase Admin SDK
+// For production, you should use a service account key file
+// For now, we'll initialize with project ID only (works with emulator or default credentials)
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let firebaseAdmin;
 
-export { app, auth };
+try {
+    // Check if already initialized
+    firebaseAdmin = admin.app();
+} catch (error) {
+    // Initialize Firebase Admin
+    firebaseAdmin = admin.initializeApp({
+        projectId: "student-accerator",
+    });
+}
+
+export const adminAuth = admin.auth();
+export default firebaseAdmin;
