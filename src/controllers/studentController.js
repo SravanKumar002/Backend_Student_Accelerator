@@ -332,6 +332,56 @@ const TRACK_CONTINUATION = {
   fullstack: [], // fullstack already has everything
 };
 
+// Track completion messages and next track suggestions
+const TRACK_NAMES = {
+  backend: "Backend Development",
+  frontend: "Frontend Development",
+  fullstack: "Full Stack Development",
+  "ai-ml": "AI/ML Engineering",
+  dsa: "Data Structures & Algorithms",
+  sql: "SQL & Databases",
+  python: "Python Programming",
+};
+
+// What track to suggest after completing a given track
+const NEXT_TRACK_SUGGESTIONS = {
+  backend: { 
+    nextTrack: "frontend", 
+    message: "🎉 Congratulations! You've completed all Backend technologies! You can now move to Frontend Development to become a Full Stack Developer.",
+    courses: ["Build Your Own Static Website", "Build Your Own Responsive Website", "Introduction to React JS"]
+  },
+  frontend: { 
+    nextTrack: "backend", 
+    message: "🎉 Congratulations! You've mastered Frontend Development! Consider moving to Backend Development to become a Full Stack Developer.",
+    courses: ["Programming Foundations", "Introduction to Databases", "Node JS", "MongoDB"]
+  },
+  sql: { 
+    nextTrack: "backend", 
+    message: "🎉 Congratulations! You've completed SQL & Databases! You can now explore Backend Development or Data Analytics.",
+    courses: ["Node JS", "MongoDB", "Data Analytics Foundations"]
+  },
+  python: { 
+    nextTrack: "ai-ml", 
+    message: "🎉 Congratulations! You've completed Python Programming! Consider exploring AI/ML or Data Science next.",
+    courses: ["Data Analytics Foundations", "Introduction to ML and Classification Algorithms"]
+  },
+  dsa: { 
+    nextTrack: "fullstack", 
+    message: "🎉 Congratulations! You've mastered DSA! You're now ready to build complete applications. Consider Full Stack Development.",
+    courses: ["Introduction to React JS", "Node JS", "MongoDB"]
+  },
+  "ai-ml": { 
+    nextTrack: "fullstack", 
+    message: "🎉 Congratulations! You've completed AI/ML track! Consider learning Full Stack to build end-to-end ML applications.",
+    courses: ["Build Your Own Dynamic Web Application", "Node JS", "Introduction to React JS"]
+  },
+  fullstack: { 
+    nextTrack: null, 
+    message: "🏆 Amazing! You've completed the entire Full Stack track! You're now a well-rounded developer ready for any challenge!",
+    courses: []
+  },
+};
+
 // @desc    Generate learning path from curriculum data
 // @route   POST /api/student/generate-path
 // @access  Public (for now, or private if logged in)
@@ -601,18 +651,50 @@ export const generatePath = async (req, res) => {
     const continuationCourses = (TRACK_CONTINUATION[targetStack] || []).filter(
       (c) => !allPlannedCourses.has(c),
     );
-    const nextAvailable =
-      remainingStackCourses.length > 0
-        ? remainingStackCourses[0]
-        : continuationCourses.length > 0
-          ? continuationCourses[0]
-          : null;
+    
+    // Check if the entire track is completed (all stack courses are planned)
+    const trackCompleted = remainingStackCourses.length === 0;
+    
+    // Build suggestion based on track completion status
+    let suggestion = null;
+    let trackCompletion = null;
+    
+    if (trackCompleted) {
+      // Track is fully completed! Show track completion message
+      const trackSuggestion = NEXT_TRACK_SUGGESTIONS[targetStack];
+      if (trackSuggestion) {
+        trackCompletion = {
+          completed: true,
+          trackName: TRACK_NAMES[targetStack] || targetStack,
+          message: trackSuggestion.message,
+          nextTrack: trackSuggestion.nextTrack,
+          nextTrackName: trackSuggestion.nextTrack ? TRACK_NAMES[trackSuggestion.nextTrack] : null,
+          suggestedCourses: trackSuggestion.courses,
+        };
+        
+        // Also add continuation courses as suggestion if available
+        if (continuationCourses.length > 0) {
+          suggestion = {
+            message: `💡 Want to continue learning? You can start with "${continuationCourses[0]}" from ${TRACK_NAMES[trackSuggestion.nextTrack] || "the next track"}!`,
+            nextCourse: continuationCourses[0],
+          };
+        }
+      }
+    } else {
+      // Track not completed, show next course in track
+      const nextAvailable =
+        remainingStackCourses.length > 0
+          ? remainingStackCourses[0]
+          : continuationCourses.length > 0
+            ? continuationCourses[0]
+            : null;
 
-    if (nextAvailable) {
-      suggestion = {
-        message: `🚀 Great progress! After completing your current plan, you can continue with "${nextAvailable}" to keep leveling up!`,
-        nextCourse: nextAvailable,
-      };
+      if (nextAvailable) {
+        suggestion = {
+          message: `🚀 Great progress! After completing your current plan, you can continue with "${nextAvailable}" to keep leveling up!`,
+          nextCourse: nextAvailable,
+        };
+      }
     }
 
     const pathData = {
@@ -622,6 +704,7 @@ export const generatePath = async (req, res) => {
       totalWeeks: modules.length,
       weeklyHours,
       ...(suggestion ? { suggestion } : {}),
+      ...(trackCompletion ? { trackCompletion } : {}),
     };
 
     res.status(200).json(pathData);
