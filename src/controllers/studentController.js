@@ -137,6 +137,32 @@ const PROGRAM_MULTIPLIER = {
   intensive: 0.7,
 };
 
+// Learning pace based on skill level
+// This affects cheat sheet and revision material durations
+const PACE_SETTINGS = {
+  slow: {
+    cheatSheetMins: 60,      // Slow learners need 60 mins for cheat sheets/revision
+    learningSetMins: 45,     // More time for learning materials
+    quizMins: 20,            // More time for quizzes
+  },
+  moderate: {
+    cheatSheetMins: 40,      // Moderate pace: 40 mins for cheat sheets
+    learningSetMins: 35,
+    quizMins: 15,
+  },
+  fast: {
+    cheatSheetMins: 25,      // Fast learners: 20-30 mins for cheat sheets
+    learningSetMins: 25,
+    quizMins: 10,
+  },
+};
+
+function determineLearningPace(skillLevel) {
+  if (skillLevel <= 2) return "slow";
+  if (skillLevel >= 4) return "fast";
+  return "moderate";
+}
+
 function determineProgram(data) {
   const { currentSkillLevel } = data.goals;
   const hasBacklogs = data.profile.hasBacklogs;
@@ -395,6 +421,10 @@ export const generatePath = async (req, res) => {
     const weeklyHours =
       availability.weekdayHours * 5 + availability.weekendHours * 2;
 
+    // Determine learning pace from skill level
+    const learningPace = determineLearningPace(goals.currentSkillLevel);
+    const paceSettings = PACE_SETTINGS[learningPace];
+
     // Determine which courses to fetch based on targetStack or courseName
     const targetStack = goals.targetStack || "fullstack";
     const stackCourses = STACK_TOPICS[targetStack] || STACK_TOPICS["fullstack"];
@@ -576,22 +606,35 @@ export const generatePath = async (req, res) => {
       const itemCourse = courseOrder[i] || "";
 
       let currentDuration = parseInt(item.duration, 10);
+      const name = (item.sessionName || "").toLowerCase();
+      const type = (item.setType || "").toLowerCase();
+      
       if (isNaN(currentDuration) || currentDuration === 0) {
-        const name = (item.sessionName || "").toLowerCase();
-        const type = (item.setType || "").toLowerCase();
-        if (name.includes("coding practice") || type.includes("coding")) {
-          currentDuration = 45;
+        // Determine duration based on session type and learning pace
+        if (name.includes("cheat sheet") || name.includes("cheatsheet") || name.includes("reading material")) {
+          // Cheat sheets / Reading materials: duration based on learning pace
+          currentDuration = paceSettings.cheatSheetMins;
+        } else if (name.includes("coding practice") || type.includes("coding") || type.includes("practice")) {
+          currentDuration = 60; // Coding practice: 1 hour
         } else if (
           name.includes("mcq") ||
           type.includes("quiz") ||
           name.includes("quiz")
         ) {
-          currentDuration = 15;
+          currentDuration = paceSettings.quizMins;
+        } else if (type.includes("learning_set") || name.includes("learning")) {
+          currentDuration = paceSettings.learningSetMins;
         } else {
-          currentDuration = 45;
+          currentDuration = 30; // Default for other types
+        }
+      } else {
+        // If duration exists in CSV but it's a cheat sheet, still apply pace-based override
+        if (name.includes("cheat sheet") || name.includes("cheatsheet") || name.includes("reading material")) {
+          currentDuration = paceSettings.cheatSheetMins;
         }
       }
-      // Apply multiplier
+      
+      // Apply program multiplier
       currentDuration = Math.ceil(currentDuration * multiplier);
 
       if (
